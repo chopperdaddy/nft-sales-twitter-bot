@@ -45,7 +45,7 @@ export class AppService {
     }, (tx) => {
       this.getTransactionDetails(tx).then((res) => {
         // Tweet!!
-        this.tweet(res);
+        if (res) this.tweet(res);
       });
     });
 
@@ -78,15 +78,19 @@ export class AppService {
         looksRareValue = parseFloat(value);
       }
 
-      return {
-        from,
-        to,
-        tokenId: tokenId.toString(),
-        ether: parseFloat(ether),
-        imageUrl,
-        hash: tx.hash,
-        looksRareValue
-      };
+      if (value || looksRareValue) {
+        return {
+          from,
+          to,
+          tokenId: tokenId.toString(),
+          ether: parseFloat(ether),
+          imageUrl,
+          hash: tx.hash,
+          looksRareValue
+        };
+      }
+
+      return null;
 
     } catch (err) {
       console.log(err);
