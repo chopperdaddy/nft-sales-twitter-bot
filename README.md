@@ -11,7 +11,7 @@ $ npm install
 ```
 
 1. Create `.env` file & add contents from `example.env` -- Add your API credentials.
-2. Edit `src/main.ts` to customize for your use.
+2. Edit `src/app.service.ts` to customize for your use.
 3. Deploy & Build `npm run build`
 
 ## Running the app
