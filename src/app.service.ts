@@ -4,6 +4,7 @@ import { HttpService } from '@nestjs/axios';
 import twit from 'twit';
 
 import { ethers } from 'ethers';
+import { hexToNumberString } from 'web3-utils';
 
 import { firstValueFrom, map } from 'rxjs';
 
@@ -37,8 +38,6 @@ export class AppService {
     private readonly http: HttpService
   ) {
 
-    console.log('test');
-
     // Listen for Transfer event
     provider.on({
       address: tokenContractAddress,
@@ -46,9 +45,9 @@ export class AppService {
       topics: ['0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef']
     }, (tx) => {
       this.getTransactionDetails(tx).then((res) => {
-        // Tweet!!
+        // Tweet
         console.log(res);
-        if (res) this.tweet(res);
+        // if (res) this.tweet(res);
       });
     });
 
@@ -57,18 +56,25 @@ export class AppService {
   async getTransactionDetails(tx: any): Promise<any> {
 
     try {
-      const { from, to, tokenId } = tx?.args;
 
-      const transaction = await tx.getTransaction();
-      const receipt = await tx.getTransactionReceipt();
+      const { transactionHash } = tx;
+
+      // Get transaction
+      const transaction = await provider.getTransaction(transactionHash);
       const { value } = transaction;
-
       const ether = ethers.utils.formatEther(value.toString());
-      const imageUrl = await this.getTokenMetadata(tokenId.toString());
 
-      let looksRareValue = 0;
+      // Get transaction receipt
+      const receipt: any = await provider.getTransactionReceipt(transactionHash);
+      const { from, to } = receipt;
+
+      // Get tokenId from topics
+      const tokenId = hexToNumberString(tx?.topics[3]);
+      // Get token image
+      const imageUrl = await this.getTokenMetadata(tokenId);
 
       // Check if LooksRare & parse the event & get the value
+      let looksRareValue = 0;
       const LR = receipt.logs.map((log: any) => {
         if (log.address.toLowerCase() === looksRareAddress.toLowerCase()) {  
           return looksInterface.parseLog(log);
@@ -81,14 +87,15 @@ export class AppService {
         looksRareValue = parseFloat(value);
       }
 
+      // Only return transfers with value (Ignore w2w transfers)
       if (value || looksRareValue) {
         return {
           from,
           to,
-          tokenId: tokenId.toString(),
+          tokenId,
           ether: parseFloat(ether),
           imageUrl,
-          hash: tx.hash,
+          transactionHash,
           looksRareValue
         };
       }
@@ -110,13 +117,15 @@ export class AppService {
         tokenId,
         tokenType: 'erc721'
       }
-    }).pipe(map((res: any) => res?.data?.metadata?.image_url)));
+    }).pipe(map((res: any) => {
+      return res?.data?.metadata?.image_url || res?.data?.tokenUri?.gateway || res?.data?.metadata?.image;
+    })));
   }
 
   async tweet(data: any) {
 
     // Replace this with a custom message
-    const tweetText = `Phunk ${data.tokenId} just sold for ${data.ether ? data.ether : data.looksRareValue} -- https://etherscan.io/tx/${data.hash}`;
+    const tweetText = `Phunk #${data.tokenId} just sold for ${data.ether ? data.ether : data.looksRareValue} -- https://etherscan.io/tx/${data.transactionHash}`;
 
     // Format our image to base64
     const processedImage = await this.getBase64(data.imageUrl);
@@ -127,12 +136,14 @@ export class AppService {
 
         const tweet = { status: tweetText, media_ids: [media.media_id_string] };
 
-        // Post the tweet
+        // Post the tweet 👇
+        // If you need access to this endpoint, you’ll need to apply for Elevated access via the Developer Portal. You can learn more here: https://developer.twitter.com/en/docs/twitter-api/getting-started/about-twitter-api#v2-access-leve
         twitterClient.post('statuses/update', tweet, (error, tweet, response) => {
           if (!error) console.log(`Successfully tweeted: ${tweetText}`);
           else console.error(error);
         });
       }
+      else console.error(error);
     });
   }
 

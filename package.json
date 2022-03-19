@@ -25,7 +25,8 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
-    "twit": "^2.2.11"
+    "twit": "^2.2.11",
+    "web3-utils": "^1.7.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.0.0",
