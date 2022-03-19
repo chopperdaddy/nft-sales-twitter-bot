@@ -47,7 +47,7 @@ export class AppService {
       this.getTransactionDetails(tx).then((res) => {
         // Tweet
         console.log(res);
-        // if (res) this.tweet(res);
+        if (res) this.tweet(res);
       });
     });
 
