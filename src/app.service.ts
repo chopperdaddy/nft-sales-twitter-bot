@@ -11,7 +11,7 @@ import { firstValueFrom, map } from 'rxjs';
 import dotenv from 'dotenv';
 dotenv.config();
 
-import looksRareABI from '../abi/looksRareABI.json';
+import looksRareABI from './abi/looksRareABI.json';
 
 const alchemyAPIUrl = 'https://eth-mainnet.alchemyapi.io/v2/';
 const alchemyAPIKey = process.env.ALCHEMY_API_KEY;
