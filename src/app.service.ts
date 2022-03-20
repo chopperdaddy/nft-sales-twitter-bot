@@ -88,7 +88,7 @@ export class AppService {
       }
 
       // Only return transfers with value (Ignore w2w transfers)
-      if (value || looksRareValue) {
+      if (parseFloat(ether) || looksRareValue) {
         return {
           from,
           to,
@@ -118,7 +118,7 @@ export class AppService {
         tokenType: 'erc721'
       }
     }).pipe(map((res: any) => {
-      return res?.data?.metadata?.image_url || res?.data?.tokenUri?.gateway || res?.data?.metadata?.image;
+      return res?.data?.metadata?.image_url || res?.data?.metadata?.image || res?.data?.tokenUri?.gateway;
     })));
   }
 
