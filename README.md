@@ -11,8 +11,10 @@ $ npm install
 ```
 
 1. Create `.env` file & add contents from `example.env` -- Add your API credentials.
-2. Edit `src/app.service.ts` to customize for your use.
-3. Build & Deploy `npm run build`
+2. Edit the `src/config.ts` file to add your smart contract & customize the tweet parameters.
+3. Edit `src/app.service.ts` to customize for your use (Experienced users only & not a requirement).
+4. Build & Deploy `npm run build`
+5. Feel free to reach out on twitter
 
 ## Running the app
 
