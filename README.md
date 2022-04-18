@@ -2,7 +2,9 @@
 
 ## Description
 
-Created using [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Tweets real-time NFT sales for ERC721 Smart contracts
+
+In order to use this you’ll need to apply for Elevated access via the Twitter Developer Portal. You can learn more [here](https://developer.twitter.com/en/docs/twitter-api/getting-started/about-twitter-api#v2-access-leve).
 
 ## Installation
 
@@ -35,4 +37,5 @@ $ npm run start:prod
 
 ## License
 
+Created using [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 Nest is [MIT licensed](LICENSE).

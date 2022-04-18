@@ -78,9 +78,8 @@ export class AppService {
     try {
 
       // Get addresses of seller / buyer from topics
-      const from = ethers.utils.defaultAbiCoder.decode(['address'], tx?.topics[1])[0];
-      const to = ethers.utils.defaultAbiCoder.decode(['address'], tx?.topics[2])[0];
-      // console.log({from, to})
+      let from = ethers.utils.defaultAbiCoder.decode(['address'], tx?.topics[1])[0];
+      let to = ethers.utils.defaultAbiCoder.decode(['address'], tx?.topics[2])[0];
 
       // Get tokenId from topics
       tokenId = hexToNumberString(tx?.topics[3]);
@@ -121,10 +120,14 @@ export class AppService {
         ensFrom = await provider.lookupAddress(`${from}`);
       }
 
+      // Set the values for address to & from -- Shorten non ens
+      to = config.ens ? (ensTo ? ensTo : this.shortenAddress(to)) : this.shortenAddress(to);
+      from = config.ens ? (ensFrom ? ensFrom : this.shortenAddress(from)) : this.shortenAddress(from);
+
       // Create response object
       const response: Response = {
-        from: config.ens ? (ensFrom ? ensFrom : from) : from,
-        to: config.ens ? (ensTo ? ensTo : to) : to,
+        from,
+        to,
         tokenId,
         ether: parseFloat(ether),
         transactionHash,
@@ -143,6 +146,12 @@ export class AppService {
       console.log(`${tokenId} failed to send`);
       return null;
     }
+  }
+
+  shortenAddress(address: string): string {
+    const shortAddress = `${address.slice(0, 5)}...${address.slice(address.length - 5, address.length)}`;
+    if (address.startsWith('0x')) return shortAddress;
+    return address;
   }
 
   async getTokenMetadata(tokenId: string): Promise<any> {

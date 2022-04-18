@@ -13,7 +13,7 @@ export const config = {
   // <txHash> =========================== The transaction hash //
   // <from> ===================================== From address //
   // <to> ========================================= To address //
-  message: 'MOONBIRD #<tokenId> was sold for <ethPrice> (<fiatPrice>) from: <from> -- to: <to> -- https://etherscan.io/tx/<txHash> #MOONBIRD #NFT',
+  message: '🚨 MOONBIRD #<tokenId> was sold for 💰 <ethPrice> (<fiatPrice>)\n\nfrom: <from>\nto: <to>\n\nhttps://etherscan.io/tx/<txHash>\nhttps://opensea.io/assets/0x23581767a106ae21c074b2276d25e5c3e136a68b/<tokenId>\nhttps://looksrare.org/collections/0x23581767a106ae21c074b2276d25e5c3e136a68b/<tokenId>\n\n#MOONBIRDS #NFT',
   // Prefer ENS over 0x address (Uses more Alchemy requests) = //
   // Available Options: ====================================== //
   // true, false ============================================= //
