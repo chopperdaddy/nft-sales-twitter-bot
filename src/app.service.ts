@@ -3,7 +3,7 @@ import { HttpService } from '@nestjs/axios';
 
 import twit from 'twit';
 
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import { hexToNumberString, hexToString, stripHexPrefix } from 'web3-utils';
 
 import { catchError, firstValueFrom, map, Observable, of, switchMap, timer } from 'rxjs';
@@ -52,7 +52,7 @@ interface Response {
 
 @Injectable()
 export class AppService {
-
+  
   fiatValues: any;
 
   constructor(
@@ -64,9 +64,13 @@ export class AppService {
     // Listen for Transfer event
     provider.on({ address: tokenContractAddress, topics: [topics] }, (tx) => {
       this.getTransactionDetails(tx).then((res) => {
-        if (res) console.log(res);
-        // Send the Tweet
-        if (res) this.tweet(res);
+
+        // Only tweet transfers with value (Ignore w2w transfers)
+        if (res?.ether || res?.looksRareValue) this.tweet(res);
+        // If free mint is enabled we can tweet 0 value
+        else if (config.includeFreeMint) this.tweet(res);
+
+        // console.log(res);
       });
     });
   }
@@ -86,6 +90,7 @@ export class AppService {
 
       // Get transaction hash
       const { transactionHash } = tx;
+      const isMint = BigNumber.from(from).isZero();
 
       // Get transaction
       const transaction = await provider.getTransaction(transactionHash);
@@ -122,7 +127,7 @@ export class AppService {
 
       // Set the values for address to & from -- Shorten non ens
       to = config.ens ? (ensTo ? ensTo : this.shortenAddress(to)) : this.shortenAddress(to);
-      from = config.ens ? (ensFrom ? ensFrom : this.shortenAddress(from)) : this.shortenAddress(from);
+      from = (isMint && config.includeFreeMint) ? 'Mint' : config.ens ? (ensFrom ? ensFrom : this.shortenAddress(from)) : this.shortenAddress(from);
 
       // Create response object
       const response: Response = {
@@ -137,10 +142,7 @@ export class AppService {
       // If the image was successfully obtained
       if (imageUrl) response.imageUrl = imageUrl;
 
-      // Only return transfers with value (Ignore w2w transfers)
-      if (response.ether || response.looksRareValue) return response;
-
-      return null;
+      return response;
 
     } catch (err) {
       console.log(`${tokenId} failed to send`);

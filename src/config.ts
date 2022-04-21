@@ -17,5 +17,9 @@ export const config = {
   // Prefer ENS over 0x address (Uses more Alchemy requests) = //
   // Available Options: ====================================== //
   // true, false ============================================= //
-  ens: true
+  ens: true,
+  // Include free mints in tweets ============================ //
+  // Available Options: ====================================== //
+  // true, false ============================================= //
+  includeFreeMint: false,
 };
