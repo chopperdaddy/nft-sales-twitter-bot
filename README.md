@@ -1,3 +1,5 @@
+‼️ This repo is no longer maintained & has been deprecated in favor of https://github.com/Crypto-Phunks/nft-sales-twitter-bot
+
 <h1>Twitter NFT sales bot</h1>
 
 ## Description
